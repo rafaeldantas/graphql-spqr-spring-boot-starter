@@ -18,6 +18,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -135,5 +136,40 @@ public class GraphQLControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Hello world")));
     }
+
+    // TODO: move to another class plus more tests
+    @Test
+    public void pagereq() throws Exception {
+
+        String withpage ="{\n" +
+                "    greeting_Pageable(first:5,after:\"2\") {\n" +
+                "        pageInfo {\n" +
+                "            startCursor\n" +
+                "            endCursor\n" +
+                "            hasNextPage\n" +
+                "        }\n" +
+                "        edges {\n" +
+                "            node {\n" +
+                "                id\n" +
+                "                name\n" +
+                "                age\n" +
+                "                }\n" +
+                "        }\n" +
+                "    }\n" +
+                "}\n";
+        mockMvc.perform(
+                get("/"+apiContext)
+                        .param("query",withpage))
+                .andExpect(status().isOk())
+                .andExpect(content().string(equalToIgnoringWhiteSpace("{\"data\":{\"greeting_Pageable\":" +
+                        "{\"pageInfo\":{\"startCursor\":\"1\",\"endCursor\":\"5\",\"hasNextPage\":true}," +
+                        "\"edges\":[{\"node\":{\"id\":\"0id\",\"name\":\"Duncan Idaho0\",\"age\":10}}," +
+                        "{\"node\":{\"id\":\"1id\",\"name\":\"Duncan Idaho1\",\"age\":11}}," +
+                        "{\"node\":{\"id\":\"2id\",\"name\":\"Duncan Idaho2\",\"age\":12}}," +
+                        "{\"node\":{\"id\":\"3id\",\"name\":\"Duncan Idaho3\",\"age\":13}}," +
+                        "{\"node\":{\"id\":\"4id\",\"name\":\"Duncan Idaho4\",\"age\":14}}]}}}")));
+    }
+
+
 
 }

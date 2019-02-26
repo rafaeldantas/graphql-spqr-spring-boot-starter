@@ -2,6 +2,7 @@ package io.leangen.graphql.spqr.spring.test;
 
 import io.leangen.graphql.ExtensionProvider;
 import io.leangen.graphql.GeneratorConfiguration;
+import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.metadata.strategy.query.BeanResolverBuilder;
 import io.leangen.graphql.metadata.strategy.query.PublicResolverBuilder;
@@ -11,10 +12,16 @@ import io.leangen.graphql.spqr.spring.annotation.WithResolverBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Configuration
 public class ResolverBuilder_TestConfig {
@@ -26,7 +33,7 @@ public class ResolverBuilder_TestConfig {
         return (config, defaults) -> defaults.insert(0, new PublicResolverBuilder() {
             @Override
             protected boolean isQuery(Method method) {
-                final String[] expectedFragments = new String[] {
+                final String[] expectedFragments = new String[]{
                         "byCustomGlobalResolverBuilder"};
 
                 return super.isQuery(method) && Arrays.stream(expectedFragments).parallel().allMatch(method.getName()::contains);
@@ -42,7 +49,7 @@ public class ResolverBuilder_TestConfig {
     @GraphQLApi
     private static class AnnotatedOperationSourceBean {
         @GraphQLQuery(name = "greetingFromAnnotatedSource_wiredAsComponent")
-        public String getGreeting(){
+        public String getGreeting() {
             return "Hello world !";
         }
     }
@@ -55,7 +62,7 @@ public class ResolverBuilder_TestConfig {
 
     private static class AnnotatedOperationSourceWired {
         @GraphQLQuery(name = "greetingFromAnnotatedSource_wiredAsBean")
-        public String getGreeting(){
+        public String getGreeting() {
             return "Hello world !";
         }
     }
@@ -83,7 +90,7 @@ public class ResolverBuilder_TestConfig {
         }
 
         @GraphQLQuery(name = "greetingFromBeanSource_wiredAsBean_byAnnotation")
-        public String getGreeting(){
+        public String getGreeting() {
             return "Hello world !";
         }
 
@@ -106,6 +113,7 @@ public class ResolverBuilder_TestConfig {
         public String greetingFromBeanSource_wiredAsBean_byNamedCustomResolverBuilder_wiredAsBean() {
             return "Hello world !";
         }
+
         public String greetingFromBeanSource_wiredAsBean_byNamedCustomResolverBuilder_wiredAsComponent() {
             return "Hello world !";
         }
@@ -130,7 +138,7 @@ public class ResolverBuilder_TestConfig {
         }
 
         @GraphQLQuery(name = "greetingFromBeanSource_wiredAsComponent_byAnnotation")
-        public String getGreeting(){
+        public String getGreeting() {
             return "Hello world !";
         }
 
@@ -159,6 +167,48 @@ public class ResolverBuilder_TestConfig {
         }
     }
 
+    // TODO: move to another class
+    @Component
+    @GraphQLApi
+    public static class PageRequestComponent {
+
+        public static List<User> users = IntStream.range(0,20)
+                .boxed()
+                .map(i -> new User(i+"id","Duncan Idaho"+i,i+10))
+                .collect(Collectors.toList());
+
+        @GraphQLQuery(name = "greeting_Pageable")
+        public Page<User> greeting_Pageable(@GraphQLArgument(name = "first") int first, @GraphQLArgument(name = "after") String after) {
+            return (PageImpl<User>) new PageImpl(users,  PageRequest.of(0, first), users.size());
+        }
+
+        public static class User {
+            private final String id;
+            private final String name;
+            private final Integer age;
+
+            User(String id, String name, Integer age) {
+                this.id = id;
+                this.name = name;
+                this.age = age;
+            }
+
+            public String getId() {
+                return id;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public Integer getAge() {
+                return age;
+            }
+        }
+    }
+
+
+
 
     //------------------------------------------------------------------------------
     //--------------------- ResolverBuilders ---------------------------------------
@@ -170,7 +220,7 @@ public class ResolverBuilder_TestConfig {
         return new PublicResolverBuilder() {
             @Override
             protected boolean isQuery(Method method) {
-                final String[] expectedFragments = new String[] {
+                final String[] expectedFragments = new String[]{
                         "greetingFromBeanSource", "byStringQualified",
                         "ResolverBuilder_wiredAsBean"};
 
@@ -185,7 +235,7 @@ public class ResolverBuilder_TestConfig {
         return new PublicResolverBuilder() {
             @Override
             protected boolean isQuery(Method method) {
-                final String[] expectedFragments = new String[] {
+                final String[] expectedFragments = new String[]{
                         "greetingFromBeanSource", "byAnnotationQualified",
                         "ResolverBuilder_wiredAsBean"};
 
@@ -199,7 +249,7 @@ public class ResolverBuilder_TestConfig {
         return new PublicResolverBuilder() {
             @Override
             protected boolean isQuery(Method method) {
-                final String[] expectedFragments = new String[] {
+                final String[] expectedFragments = new String[]{
                         "greetingFromBeanSource", "byNamed",
                         "ResolverBuilder_wiredAsBean"};
 
@@ -209,13 +259,12 @@ public class ResolverBuilder_TestConfig {
     }
 
 
-
     @Component
     @Qualifier("testStringQualifiedCustomResolverBuilderComponent")
-    public static class CustomStringQualifiedResolverBuilderComponent extends PublicResolverBuilder{
+    public static class CustomStringQualifiedResolverBuilderComponent extends PublicResolverBuilder {
         @Override
         protected boolean isQuery(Method method) {
-            final String[] expectedFragments = new String[] {
+            final String[] expectedFragments = new String[]{
                     "greetingFromBeanSource", "byStringQualified",
                     "ResolverBuilder_wiredAsComponent"};
 
@@ -225,10 +274,10 @@ public class ResolverBuilder_TestConfig {
 
     @Component
     @TestComponentQualifier
-    public static class CustomAnnotationQualifiedResolverBuilderComponent extends PublicResolverBuilder{
+    public static class CustomAnnotationQualifiedResolverBuilderComponent extends PublicResolverBuilder {
         @Override
         protected boolean isQuery(Method method) {
-            final String[] expectedFragments = new String[] {
+            final String[] expectedFragments = new String[]{
                     "greetingFromBeanSource",
                     "byAnnotationQualified", "ResolverBuilder_wiredAsComponent"};
 
@@ -237,10 +286,10 @@ public class ResolverBuilder_TestConfig {
     }
 
     @Component("testNamedCustomResolverBuilderComponent")
-    public static class CustomNamedResolverBuilderComponent extends PublicResolverBuilder{
+    public static class CustomNamedResolverBuilderComponent extends PublicResolverBuilder {
         @Override
         protected boolean isQuery(Method method) {
-            final String[] expectedFragments = new String[] {
+            final String[] expectedFragments = new String[]{
                     "greetingFromBeanSource",
                     "byNamed", "ResolverBuilder_wiredAsComponent"};
 

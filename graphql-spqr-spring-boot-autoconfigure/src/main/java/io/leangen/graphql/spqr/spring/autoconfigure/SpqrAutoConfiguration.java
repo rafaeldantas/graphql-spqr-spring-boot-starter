@@ -8,11 +8,7 @@ import io.leangen.graphql.ExtensionProvider;
 import io.leangen.graphql.GeneratorConfiguration;
 import io.leangen.graphql.GraphQLSchemaGenerator;
 import io.leangen.graphql.execution.ResolverInterceptorFactory;
-import io.leangen.graphql.generator.mapping.ArgumentInjector;
-import io.leangen.graphql.generator.mapping.InputConverter;
-import io.leangen.graphql.generator.mapping.OutputConverter;
-import io.leangen.graphql.generator.mapping.SchemaTransformer;
-import io.leangen.graphql.generator.mapping.TypeMapper;
+import io.leangen.graphql.generator.mapping.*;
 import io.leangen.graphql.generator.mapping.strategy.AbstractInputHandler;
 import io.leangen.graphql.generator.mapping.strategy.InterfaceMappingStrategy;
 import io.leangen.graphql.metadata.messages.MessageBundle;
@@ -28,6 +24,8 @@ import io.leangen.graphql.module.Module;
 import io.leangen.graphql.spqr.spring.annotation.GraphQLApi;
 import io.leangen.graphql.spqr.spring.annotation.WithResolverBuilder;
 import io.leangen.graphql.spqr.spring.annotation.WithResolverBuilders;
+import io.leangen.graphql.spqr.spring.util.mapping.PageAdapter;
+import io.leangen.graphql.spqr.spring.util.mapping.PageRequestMapper;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
@@ -48,14 +46,7 @@ import org.springframework.util.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Configuration
 @ConditionalOnClass(GraphQLSchemaGenerator.class)
@@ -134,6 +125,16 @@ public class SpqrAutoConfiguration {
     @ConditionalOnMissingBean
     public PublicResolverBuilder defaultPublicResolverBuilder() {
         return new PublicResolverBuilder();
+    }
+
+    @Bean
+    public ExtensionProvider<GeneratorConfiguration, TypeMapper> pageTypeMapper() {
+        return ((config, defaults) -> defaults.prepend( new PageRequestMapper()));
+    }
+
+    @Bean
+    public ExtensionProvider<GeneratorConfiguration, OutputConverter> pageTypeAdapter() {
+        return ((config, defaults) -> defaults.prepend( new PageAdapter()));
     }
 
     @Bean
