@@ -7,26 +7,18 @@
         <version>0.0.5-SNAPSHOT</version>
     </parent>
 
-    <artifactId>graphql-spqr-spring-boot-starter</artifactId>
+    <artifactId>graphql-spqr-spring-boot-annotations</artifactId>
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>io.leangen.graphql</groupId>
-            <artifactId>graphql-spqr-spring-boot-autoconfigure</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>io.leangen.graphql</groupId>
             <artifactId>spqr</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

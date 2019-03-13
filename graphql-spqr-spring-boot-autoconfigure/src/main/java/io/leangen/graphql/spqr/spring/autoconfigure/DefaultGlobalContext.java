@@ -1,21 +1,20 @@
 package io.leangen.graphql.spqr.spring.autoconfigure;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultGlobalContext {
+public class DefaultGlobalContext<R> {
 
-    private final HttpServletRequest servletRequest;
+    private final R nativeRequest;
     private final Map<String, Object> extensions;
 
-    public DefaultGlobalContext(HttpServletRequest servletRequest) {
-        this.servletRequest = servletRequest;
+    public DefaultGlobalContext(R request) {
+        this.nativeRequest = request;
         this.extensions = new ConcurrentHashMap<>();
     }
 
-    public HttpServletRequest getServletRequest() {
-        return servletRequest;
+    public R getNativeRequest() {
+        return nativeRequest;
     }
 
     @SuppressWarnings("unchecked")
