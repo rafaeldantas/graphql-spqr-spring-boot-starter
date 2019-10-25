@@ -26,7 +26,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableWebSocket
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(WebSocketConfigurer.class)
-@ConditionalOnProperty(name = "graphql.spqr.ws.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "graphql.spqr.ws.enabled", havingValue = "true")
 @ConditionalOnBean(GraphQLSchema.class)
 public class SpqrWebSocketAutoConfiguration implements WebSocketConfigurer {
 

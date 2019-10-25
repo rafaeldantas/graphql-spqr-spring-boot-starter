@@ -42,3 +42,8 @@ generated
 # ??
 *.log
 demo/.idea/
+
+# Eclipse
+.classpath
+.project
+.settings/

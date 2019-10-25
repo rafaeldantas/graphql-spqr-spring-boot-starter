@@ -29,7 +29,7 @@ To use this starter in a typical Spring Boot project, add the following dependen
   </dependency>
 </dependencies>
 ```
-[There's also a very basic sample project](https://github.com/leangen/graphql-spqr-samples/tree/master/spring-boot-starter-sample) 
+[There's also a very basic sample project](https://github.com/leangen/graphql-spqr-samples/tree/master/spring-boot-starter-sample)
 
 ## Defining the operation sources (the beans that get exposed via the API)
 
@@ -44,7 +44,7 @@ This annotation can be used in combination with `@Component/@Service/@Repository
         ...
     }
 ```
-or 
+or
 ```java
     @Bean
     @GraphQLApi
@@ -124,7 +124,7 @@ As an example, we can expose the `greeting` query by using:
     @WithResolverBuilder(BeanResolverBuilder.class) //exposes all getters
     private class MyOperationSource {
         public String getGreeting(){
-            return "Hello world !"; 
+            return "Hello world !";
         }
     }
 ```
@@ -138,10 +138,10 @@ or:
     public MyOperationSource() {
         @GraphQLQuery(name = "greeting")
         public String getGreeting(){
-            return "Hello world !"; 
+            return "Hello world !";
         }
     }
-``` 
+```
 
 It is also entirely possible to use more than one resolver builder on the same operation source e.g.
 
@@ -153,13 +153,13 @@ It is also entirely possible to use more than one resolver builder on the same o
     private class MyOperationSource {
         //Exposed by BeanResolverBuilder because it's a getter
         public String getGreeting(){
-            return "Hello world !"; 
+            return "Hello world !";
         }
 
         //Exposed by AnnotatedResolverBuilder because it's annotated
         @GraphQLQuery
         public String personalGreeting(String name){
-            return "Hello " + name + " !"; 
+            return "Hello " + name + " !";
         }
     }
 ```
@@ -219,7 +219,7 @@ Object in charge of doing this in SPQR is `ValueMapperFactory`. Again the simple
             }
         };
     }
-``` 
+```
 NOTE: SPQR comes with `JacksonValueMapper` and `GsonValueMapperFactory` so in reality this should be rarely needed as these are by far the most frequently used libraries in Java.
 
 ### Customizing input and output converters
@@ -256,7 +256,7 @@ Extension provider for output converters
     @Bean
     public ExtensionProvider<GeneratorConfiguration, OutputConverter> testOutputConverterExtensionProvider() {
          //Insert a custom converter after the built-in IdAdapter (which is generally a safe position).
-         //Return a new list instead to take full control. 
+         //Return a new list instead to take full control.
         return (config, current) -> current.insertAfter(IdAdapter.class,
             new OutputConverter() {
                 @Override
@@ -359,6 +359,29 @@ Wiring a single bean of type `ExtensionProvider<GraphQLSchemaGenerator.ExtendedC
 ```
 
 NOTE: In SPQR `InputFieldBuilder` is already implemented by `JacksonValueMapper` and `GsonValueMapper`.
+
+### Available Properties
+
+| Property | Default Value |
+| ------ | ------ |
+| graphql.spqr.base-packages | n/a |
+| graphql.spqr.abstract-input-type-resolution | false |
+| graphql.spqr.relay.enabled | false |
+| graphql.spqr.relay.mutation-wrapper | n/a |
+| graphql.spqr.relay.mutation-wrapper-description | n/a |
+| graphql.spqr.relay.connection-check-relaxed | n/a |
+| graphql.spqr.http.enabled | true |
+| graphql.spqr.http.endpoint | /graphql |
+| graphql.spqr.ws.enabled | false |
+| graphql.spqr.ws.endpoint | n/a |
+| graphql.spqr.ws.allowedOrigins | * |
+| graphql.spqr.ws.keepAlive.enabled | false |
+| graphql.spqr.ws.keepAlive.intervalMillis | 10000 |
+| graphql.spqr.gui.enabled | true |
+| graphql.spqr.gui.endpoint | /gui |
+| graphql.spqr.gui.targetEndpoint | n/a |
+| graphql.spqr.gui.targetWsEndpoint | n/a |
+| graphql.spqr.gui.pageTitle | GraphQL Playground |
 
 
 ### More to follow soon ...
